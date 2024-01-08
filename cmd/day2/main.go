@@ -19,17 +19,18 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 
-	var sum int
+	var sum, powerSum int
 	for scanner.Scan() {
-		id, valid := test(scanner.Text())
+		id, power, valid := test(scanner.Text())
 		if valid {
 			sum += id
 		}
+		powerSum += power
 	}
-	fmt.Println(sum)
+	fmt.Printf("Sum: %d\nPower Sum: %d\n", sum, powerSum)
 }
 
-func test(game string) (int, bool) {
+func test(game string) (int, int, bool) {
 	blueRegex := regexp.MustCompile(`(\d+)(?:\sblue)`)
 	greenRegex := regexp.MustCompile(`(\d+)(?:\sgreen)`)
 	redRegex := regexp.MustCompile(`(\d+)(?:\sred)`)
@@ -45,31 +46,33 @@ func test(game string) (int, bool) {
 
 	sets := strings.Split(game, ";")
 
-	valid := false
+	valid := true
+	var redMax, blueMax, greenMax int
 	for _, set := range sets {
 		var greenTotal, redTotal, blueTotal int
 		for _, match := range blueRegex.FindAllStringSubmatch(set, -1) {
-			if str, err := strconv.Atoi(match[1]); err == nil {
-				blueTotal += str
+			if count, err := strconv.Atoi(match[1]); err == nil {
+				blueTotal += count
+				blueMax = max(blueMax, count)
 			}
 		}
 
 		for _, match := range greenRegex.FindAllStringSubmatch(set, -1) {
-			if str, err := strconv.Atoi(match[1]); err == nil {
-				greenTotal += str
+			if count, err := strconv.Atoi(match[1]); err == nil {
+				greenTotal += count
+				greenMax = max(greenMax, count)
 			}
 		}
 
 		for _, match := range redRegex.FindAllStringSubmatch(set, -1) {
-			if str, err := strconv.Atoi(match[1]); err == nil {
-				redTotal += str
+			if count, err := strconv.Atoi(match[1]); err == nil {
+				redTotal += count
+				redMax = max(redMax, count)
 			}
 		}
-		valid = (blueTotal <= cubeCounts["blue"] && greenTotal <= cubeCounts["green"] && redTotal <= cubeCounts["red"])
-		if !valid {
-			break
-		}
+		valid = valid && greenTotal <= cubeCounts["green"] && redTotal <= cubeCounts["red"] && blueTotal <= cubeCounts["blue"]
 	}
 
-	return id, valid
+	power := redMax * blueMax * greenMax
+	return id, power, valid
 }
