@@ -7,8 +7,7 @@ import (
 )
 
 func main() {
-
-	file, err := os.Open("input_test.txt")
+	file, err := os.Open("../inputs/day3_test.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -16,15 +15,16 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 
-	matrix := make([][]string, 0)
+	lines := []string{}
 	for scanner.Scan() {
-		line := scanner.Text()
-		matrix = append(matrix, []string{line})
+		lines = append(lines, scanner.Text())
 	}
 
-	fmt.Println(matrix)
-}
-
-func test(matrix [][]string) {
-
+	res := parseLines(lines)
+	fmt.Println(res)
+	var sum int
+	for _, v := range res {
+		sum += v
+	}
+	fmt.Println(sum)
 }

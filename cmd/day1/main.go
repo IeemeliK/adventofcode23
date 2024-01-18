@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	bytes, err := os.ReadFile("input.txt")
+	bytes, err := os.ReadFile("../inputs/day1.txt")
 	if err != nil {
 		panic(err)
 	}
